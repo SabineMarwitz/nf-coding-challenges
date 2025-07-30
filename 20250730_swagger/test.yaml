@@ -1,0 +1,90 @@
+openapi: 3.0.4
+info:
+  title: My SWAGGER Exercise
+  description: These are my first experiments with swagger.
+  version: 0.0.1
+servers:
+  - url: https://localhost:3000/
+
+paths:
+  /hello{name}:
+    get:
+      summary: return hello {name}
+      parameters:
+        - name: name
+          in: path # path, query, header, cookie
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
+  /users:
+    post:
+      summary: create a user
+      description: create a new user by given name and email
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Created
+      requestBody:
+        description: The user object to create
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      summary: get user by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: "User not found "
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Tom
+        email:
+          type: string
+          example: tom@example.com
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: id not found
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
